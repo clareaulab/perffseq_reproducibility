@@ -8,7 +8,7 @@ library(cowplot)
 library(SeuratDisk)
 
 # import reference
-ref_path <- "/Users/lareauc/Dropbox/main_papers/pearson/pearson_large_data_files/input/pbmc/pbmc_multimodal.h5seurat"
+ref_path <- "../../../ps-large-data-files/other_data/pbmc_multimodal.h5seurat"
 
 options(future.globals.maxSize = 4000 * 1024^2)
 reference <- LoadH5Seurat(ref_path)
