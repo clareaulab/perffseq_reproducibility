@@ -12,7 +12,7 @@ data_df <- data.frame(
 pB1 <- ggplot(data_df %>% reshape2::melt(id.vars = c("Cond", "internal")),
        aes(x = Cond, y = value, fill = variable)) +
   geom_bar(stat = "identity", position=position_dodge(), color = "black", width = 0.5) +
-  scale_y_continuous(expand = c(0,0)) + labs(x = "", y = "% of molecules") +
+  scale_y_continuous(expand = c(0,0), limits = c(0, 90)) + labs(x = "", y = "% of molecules") +
   pretty_plot(fontsize = 7) + L_border() + scale_fill_manual(values = c("blue", "lightgrey")) +
   theme(legend.position = "none")
 
@@ -31,7 +31,7 @@ data_dfG <- data.frame(
 pBS <- ggplot(data_dfG %>% reshape2::melt(id.vars = c("Cond", "internal")),
               aes(x = Cond, y = value, fill = variable)) +
   geom_bar(stat = "identity", position=position_dodge(), color = "black", width = 0.5) +
-  scale_y_continuous(expand = c(0,0)) + labs(x = "", y = "% of molecules") +
+  scale_y_continuous(expand = c(0,0), limits = c(0, 90)) + labs(x = "", y = "% of molecules") +
   pretty_plot(fontsize = 7) + L_border() + scale_fill_manual(values = c("blue", "lightgrey")) +
   theme(legend.position = "none")
 
@@ -46,10 +46,10 @@ data_dfSORT <- data.frame(
   half = c(25.4, 30.1, 4.2)
 )
 
-pB1 <- ggplot(data_df %>% reshape2::melt(id.vars = c("Cond", "internal")),
+pB1 <- ggplot(data_dfSORT %>% reshape2::melt(id.vars = c("Cond", "internal")),
               aes(x = Cond, y = value, fill = variable)) +
   geom_bar(stat = "identity", position=position_dodge(), color = "black", width = 0.5) +
-  scale_y_continuous(expand = c(0,0)) + labs(x = "", y = "% of molecules") +
+  scale_y_continuous(expand = c(0,0), limits = c(0, 90)) + labs(x = "", y = "% of molecules") +
   pretty_plot(fontsize = 7) + L_border() + scale_fill_manual(values = c("blue", "lightgrey")) +
   theme(legend.position = "none")
 
