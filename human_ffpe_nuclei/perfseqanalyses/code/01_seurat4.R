@@ -1,5 +1,6 @@
 library(Seurat)
 library(dplyr)
+library(BuenColors)
 
 # Import counts matrix and set up seurat object
 countsN1 <- Read10X_h5("../data/x1_negative_filtered_feature_bc_matrix.h5")
@@ -98,6 +99,23 @@ p1
 cowplot::ggsave2(p1, file = "../output/ecdf_ffpe_count.pdf", width = 1.4, height = 1.4)
 
 
+ecdf_df <- data.frame(
+  channel = rep(so$channel, 3),
+  count = c(so@assays$RNA@counts["FN1", ], so@assays$RNA@counts["DCN", ], so@assays$RNA@counts["VWF", ]),
+  gene = c(rep("FN1", dim(so)[2]), rep("DCN", dim(so)[2]), rep("VWF", dim(so)[2]))
+)
+
+p3 <- ecdf_df%>%
+  ggplot(aes(x = count , color = channel)) + 
+  stat_ecdf() + coord_cartesian(xlim = c(0, 20)) +
+  facet_wrap(~gene)+
+  scale_color_manual(values = jdb_palette("corona")[c(4,5)])+
+  pretty_plot(fontsize = 5) + theme(legend.position = "none") +
+  labs(x = "Panel UMI count")
+p3
+cowplot::ggsave2(p3, file = "../output/ecdf_supplement.pdf", width = 3.5, height = 1.3)
+
+
 ###########################
 # Subset to the one cluster
 #########################
@@ -112,11 +130,14 @@ cowplot::ggsave2(
   DimPlot(so_ss, group.by = "seurat_clusters", pt.size = 0.1) + theme_void() + FontSize(main = 0.0001) + 
     theme_void() +
     theme(legend.position = "none") + ggtitle("") + 
-    theme(plot.margin = unit(c(0, 0, 0, 0), "cm"))
-  , file = "../output/subset_channel_umap_ffpe.png",width = 1.5*1, height = 1.5*1, dpi = 600)
+    theme(plot.margin = unit(c(0, 0, 0, 0), "cm")),
+   file = "../output/subset_channel_umap_ffpe.png",width = 1.5*1, height = 1.5*1, dpi = 600)
 
-
+# Write ffpe
 fam <- FindAllMarkers(so_ss, only.pos = TRUE)
+fam %>% group_by(cluster) %>% top_n(50, wt = avg_log2FC) %>% data.frame() %>%
+  write.table("../output/ffpe_subcluster_marker_genes.tsv", sep = "\t", quote = FALSE, row.names = FALSE, col.names = TRUE)
+
 fam %>% arrange(desc(avg_log2FC)) %>% filter(cluster == 0) %>% head(20)
 
 FeaturePlot(so_ss, c("FN1", "DCN", "VWF", "FCGBP", "APOD", "OGN", "CD74", "C1QC", "MKI67", "VEGFA",
@@ -138,4 +159,21 @@ cowplot::ggsave2(
     mk_plot_ss("OGN"),
     ncol = 4, scale = 1
   ), file = "../output/subset_ffpe_markers_umap_main.png",width = 1.5*4, height = 1.5*1, dpi = 600)
+
+cowplot::ggsave2(
+  cowplot::plot_grid(
+    mk_plot_ss("FN1"),
+    mk_plot_ss("VEGFA"),
+    mk_plot_ss("PDPN"),
+    mk_plot_ss("MS4A7"),
+    mk_plot_ss("NOTCH3"),
+    mk_plot_ss("DCN"),
+    mk_plot_ss("VWF"),
+    mk_plot_ss("FGFR2"),
+    mk_plot_ss("DLL4"),
+    mk_plot_ss("CLDN5"),
+
+    ncol = 5, scale = 1
+  ), file = "../output/subset_ffpe_markers_umap_supplement.png",width = 1.5*5, height = 1.5*2, dpi = 600)
+
 

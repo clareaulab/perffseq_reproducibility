@@ -19,3 +19,9 @@ VLN <- VlnPlot(reference, group.by = "celltype.l2", features = c("BCL11A", "SPI1
         pt.size=0) & pretty_plot(fontsize = 7) & L_border() & theme(legend.position = "none") &
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 cowplot::ggsave2(VLN, file = "../output/violin_azimuth_2.pdf", width = 7.5, height = 2)
+
+VLN2 <- VlnPlot(reference, group.by = "celltype.l2", features = c("IL3RA", "CD123"),
+               pt.size=0) & pretty_plot(fontsize = 7) & L_border() & theme(legend.position = "none") &
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+VLN2
+cowplot::ggsave2(VLN2, file = "../output/violin_azimuth_2PDCs.pdf", width = 7.5, height = 2)

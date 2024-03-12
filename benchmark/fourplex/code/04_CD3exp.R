@@ -14,10 +14,10 @@ cd3m <- Read10X_h5("../data/cd3bench_cr_CD3_positive_filtered_feature_bc_matrix.
 mat <- cbind(flex, nsyp, nsnp, cd3m)
 mdf <- data.frame(
   row.names = colnames(mat),
-  sampleID = c(rep("flex", dim(flex)[2]),
-               rep("nsnp", dim(nsnp)[2]),
-               rep("nsyp", dim(nsyp)[2]),
-               rep("CD3m", dim(cd3m)[2]))
+  sampleID = c(rep("1flex", dim(flex)[2]),
+               rep("2nsnp", dim(nsnp)[2]),
+               rep("3nsyp", dim(nsyp)[2]),
+               rep("4CD3m", dim(cd3m)[2]))
 )
 
 so <- CreateSeuratObject(counts = mat,
@@ -31,26 +31,51 @@ so <- subset(so, subset = nFeature_RNA > 500 & nFeature_RNA < 10000 & percent.mt
 so <- NormalizeData(so) %>% FindVariableFeatures() %>% ScaleData() %>% RunPCA() %>% 
   FindNeighbors() %>% RunUMAP(dims = 1:30)
 so <- so %>% FindClusters(resolution = 0.4)
-DimPlot(so, label = TRUE, group.by = c("seurat_clusters", "sampleID"), shuffle = TRUE)
 
-mean(so@meta.data$seurat_clusters %in% c(8, 9))
-FeaturePlot(so, c("CD3E", "CD3D", "CD4", "CD8A", "MS4A1", "CD14", "NCAM1"))
+DimPlot(so, label = TRUE, group.by = c("sampleID", "seurat_clusters"), shuffle = TRUE) 
 
-so$CD3Dc <- log1p(so@assays$RNA@counts["CD3D", ])
-so$CD3Ec <- log1p(so@assays$RNA@counts["CD3E", ])
+pu_split <- DimPlot(so, label = FALSE, group.by = c("sampleID"), shuffle = TRUE) +
+  facet_wrap(~sampleID, nrow = 1) +
+  scale_color_manual(values = jdb_palette("corona")[c(5,2,3,1)] ) +
+  theme_void() + ggtitle("") + theme(legend.position = "none")
+cowplot::ggsave2(pu_split, file = "../plots/4plex_umap.png", height= 2*2, width = 7.2*2)
+
+pu_1 <- DimPlot(so, label = FALSE, group.by = c("sampleID"), shuffle = TRUE, pt.size = 0.1) +
+  scale_color_manual(values = jdb_palette("corona")[c(5,2,3,1)] ) +
+  theme_void() + ggtitle("") + theme(legend.position = "none")
+cowplot::ggsave2(pu_1, file = "../plots/single_umap.png", height= 3*4, width = 3*4, dpi = 400)
+
+
+so$CD3Dc <- (so@assays$RNA@counts["CD3D", ])
+so$CD3Ec <- (so@assays$RNA@counts["CD3E", ])
 
 so_t <- subset(so, seurat_clusters %in%c("0", "1", "2", "4", "5"))
 library(ggpubr)
-ggplot(so_t@meta.data, aes(x = CD3Dc, y = CD3Ec)) +
-  geom_point() + facet_wrap(~sampleID) +
+pcore <- ggplot(so_t@meta.data, aes(x = log1p(CD3Dc), y = log1p(CD3Ec))) +
+  geom_point() + facet_wrap(~sampleID, nrow = 1) +
   geom_smooth(method = "lm", se = FALSE) +
-  stat_cor(method = "pearson") + pretty_plot()
+  pretty_plot(fontsize = 7)
+cowplot::ggsave2(pcore, file = "../plots/cd3_core.pdf", height= 1.8, width = 7.2)
 
+mk_plot <- function(gene){
+  pu <- FeaturePlot(so, features = c( gene),  
+                    pt.size = 0.1, max.cutoff = "q90") + FontSize(main = 0.0001) + 
+    theme_void() + theme(legend.position = "none") + ggtitle("") + 
+    theme(plot.margin = unit(c(0, 0, 0, 0), "cm")) +
+    scale_color_gradientn(colors = c("lightgrey", jdb_palette("solar_rojos")[c(2:9)]))
+  return(pu)
+}
 
-so@meta.data %>%
-  ggplot(aes(x = CD3Dc+CD3Ec)) + 
-  stat_ecdf() + coord_cartesian(xlim = c(0, 30)) +
-  scale_color_manual(values = c("firebrick", "grey","dodgerblue3"))+
-  pretty_plot(fontsize = 5) + L_border() + theme(legend.position = "none")
-cowplot::ggsave2(p1, file = "../output/ecdf_BCL11A_count.pdf", width = 1.4, height = 1.4)
+cowplot::ggsave2(
+  cowplot::plot_grid(
+    mk_plot("CD3D"),
+    mk_plot("CD8A"),
+    mk_plot("CD4"),
+    mk_plot("NKG7"),
+    mk_plot("MS4A1"), 
+    mk_plot("CEBPB"), 
+    mk_plot("CD14"), 
+    mk_plot("CLEC4C"), 
+    ncol = 4, scale = 1
+  ), file = "../plots/4plex_markers_umap_supp.png",width = 3*4, height = 1.5*4, dpi = 600)
 

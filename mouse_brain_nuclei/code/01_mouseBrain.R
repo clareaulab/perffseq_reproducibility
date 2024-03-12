@@ -13,14 +13,15 @@ summary(so$percent.mt)
 summary(so$nCount_RNA)
 summary(so$nFeature_RNA)
 
-
-
 # subset and normalize and cluster
 so <- subset(so, subset = nCount_RNA >= 1000 & nFeature_RNA >= 500  & percent.mt < 5)
 so <- NormalizeData(so) %>% FindVariableFeatures() %>% ScaleData() %>% RunPCA() %>% 
   FindNeighbors() %>% RunUMAP(dims = 1:30)
 so <- so %>% FindClusters(resolution = 0.2)
 dim(so)
+
+FindMarkers(so, ident.1 = "7", ident.2 = "3", group.by = "seurat_clusters", logfc.threshold = 0.5, only.pos = TRUE) %>% 
+  head(20)
 
 # Find DEGs
 fm <- FindMarkers(so, ident.1 = "positive", ident.2 = "negative", group.by = "channel")
@@ -45,8 +46,10 @@ cowplot::ggsave2(
   cowplot::plot_grid(
     mk_plot("Gabra6"),
     mk_plot("Rbfox3"),
+    mk_plot("Gad1"),
+    mk_plot("Itih3"),
     ncol = 2, scale = 1
-  ), file = "../output/maincluster_supp_marker_umap.png", width = 1.5*4*2, height = 1.5*2*2, dpi = 600)
+  ), file = "../output/maincluster_supp_marker_umap.png", width = 1.5*4*2, height = 1.5*4*2, dpi = 600)
 
 
 cowplot::ggsave2(
