@@ -66,25 +66,6 @@ mat_2 <- Seurat::Read10X_h5("../../perfseqanalyses/data/x1_negative_filtered_fea
 molecule_info_file2 <- "../../../../ps-large-data-files/molecule_info/perfseq/gbm/x1_negative_sample_molecule_info.h5"
 cell_barcodes2 <- stringr::str_remove(colnames(mat_2), "-1$")
 
-# cell barcoding funky based on what was available on 10x website
-# Import raw counts from 10x website
-raw_ffpeA <- Read10X_h5("../../../../ps-large-data-files/other_data/4plex_human_lungcancer_glioblastoma_scFFPE_multiplex_Multiplex_count_raw_feature_bc_matrix.h5")
-
-# BCs 3 and 4 are GBM
-bc001 <- "ACTTTAGG"
-bc002 <- "AACGGGAA"
-bc003 <- "AGTAGGCT" 
-bc004 <- "ATGTTGAC"
-
-raw_ffpe_BC3 <- raw_ffpeA[,substr(colnames(raw_ffpeA), 17, 24) %in% c(bc003)]
-raw_ffpe_BC4 <- raw_ffpeA[,substr(colnames(raw_ffpeA), 17, 24) %in% c(bc004)]
-
-boo3 <- colSums(raw_ffpe_BC3) >= 1500 & colSums(raw_ffpe_BC3 > 0) >= 750
-boo4 <- colSums(raw_ffpe_BC4) >= 1500 & colSums(raw_ffpe_BC4 > 0) >= 750
-
-cell_barcodes3 <- colnames(raw_ffpe_BC3[,boo3]) %>% stringr::str_remove(., "-1$")
-cell_barcodes4 <- colnames(raw_ffpe_BC4[,boo4]) %>% stringr::str_remove(., "-1$")
-
 # path to molecular files
 mat_3 <- Seurat::Read10X_h5("../../public/data/Glioblastoma_Manual_BC3_sample_filtered_feature_bc_matrix.h5")
 molecule_info_file3 <- "../../../../ps-large-data-files/molecule_info/public_flex/gbm/Glioblastoma_Manual_BC3_sample_molecule_info.h5"

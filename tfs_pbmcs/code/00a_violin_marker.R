@@ -15,6 +15,10 @@ reference <- LoadH5Seurat(ref_path)
 #reference$BCL11Ascale <- reference@assays$SCT$data["BCL11A",]
 #reference$SPI1scale <- reference@assays$SCT$data["SPI1",]
 
+VlnPlot(reference, group.by = "celltype.l2", features = c("TCL1A"),
+        pt.size=0) & pretty_plot(fontsize = 7) & L_border() & theme(legend.position = "none") &
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+
 VLN <- VlnPlot(reference, group.by = "celltype.l2", features = c("BCL11A", "SPI1"),
         pt.size=0) & pretty_plot(fontsize = 7) & L_border() & theme(legend.position = "none") &
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))

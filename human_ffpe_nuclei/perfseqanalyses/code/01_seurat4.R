@@ -89,6 +89,10 @@ fm[c("DCN", "VWF", "FN1"),]
 ###
 
 so$on_target <- so@assays$RNA@counts["FN1", ] + so@assays$RNA@counts["DCN", ] + so@assays$RNA@counts["VWF", ]
+
+so@meta.data %>% group_by(channel) %>%
+  summarize(mean(on_target > 0), mean(on_target))
+
 p1 <- so@meta.data %>%
   ggplot(aes(x = on_target , color = channel)) + 
   stat_ecdf() + coord_cartesian(xlim = c(0, 30)) +

@@ -75,7 +75,7 @@ mat_4 <- Seurat::Read10X_h5("../data/cd3bench_cr_CD3_positive_filtered_feature_b
 molecule_info_file4 <- "../../../../ps-large-data-files/molecule_info/perfseq/pbmc/CD3_positive_sample_molecule_info.h5"
 cell_barcodes4 <- stringr::str_remove(colnames(mat_4), "-1$")
 
-mat_5 <- Seurat::Read10X_h5("../data/pub10x_10k_PBMC.filtered.h5")
+mat_5 <- Seurat::Read10X_h5("../data/pub10x_10k_PBMC_filtered_feature_bc_matrix.h5")
 molecule_info_file5 <- "../../../../ps-large-data-files/molecule_info/public_flex/pbmc/10x_public_pbmc_sample_molecule_info.h5"
 cell_barcodes5 <- stringr::str_remove(colnames(mat_5), "-1$")
 

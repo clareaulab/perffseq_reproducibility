@@ -20,13 +20,11 @@ so <- NormalizeData(so) %>% FindVariableFeatures() %>% ScaleData() %>% RunPCA() 
 so <- so %>% FindClusters(resolution = 0.2)
 dim(so)
 
-FindMarkers(so, ident.1 = "7", ident.2 = "3", group.by = "seurat_clusters", logfc.threshold = 0.5, only.pos = TRUE) %>% 
-  head(20)
 
 # Find DEGs
-fm <- FindMarkers(so, ident.1 = "positive", ident.2 = "negative", group.by = "channel")
-fm %>% arrange(desc(avg_log2FC)) %>% tail(20)
-fm["Mobp",]
+#fm <- FindMarkers(so, ident.1 = "positive", ident.2 = "negative", group.by = "channel")
+#fm %>% arrange(desc(avg_log2FC)) %>% tail(20)
+#fm["Mobp",]
 
 
 mk_plot <- function(gene){
@@ -45,7 +43,7 @@ cowplot::ggsave2(
 cowplot::ggsave2(
   cowplot::plot_grid(
     mk_plot("Gabra6"),
-    mk_plot("Rbfox3"),
+    mk_plot("Ppp1r17"),
     mk_plot("Gad1"),
     mk_plot("Itih3"),
     ncol = 2, scale = 1
@@ -94,6 +92,7 @@ so_ss <- subset(so, subset = seurat_clusters %in% c(0,2) & channel == "positive"
 so_ss <- NormalizeData(so_ss) %>% FindVariableFeatures() %>% ScaleData() %>% RunPCA() %>% 
   FindNeighbors() %>% RunUMAP(dims = 1:30) 
 so_ss <- so_ss %>% FindClusters(resolution = 0.2)
+table(so_ss$seurat_clusters)
 
 cowplot::ggsave2(
   DimPlot(so_ss, group.by = "seurat_clusters", pt.size = 0.1) + theme_void() + FontSize(main = 0.0001) + 
@@ -104,7 +103,10 @@ cowplot::ggsave2(
 
 
 
-FeaturePlot(so_ss, features = c("nCount_RNA", "nFeature_RNA"))
+FeaturePlot(so_ss, features = c("Ptgds","Tspan2","Mal",
+                                "Klk6","S100b", "Tspan9",
+                                 "Atp1b1", "Snap25", "Thy1",
+                                "Gja1", "Aqp4", "Slc6a11"))
 
 if(FALSE){
   fam <- FindAllMarkers(so_ss, only.pos = TRUE)
@@ -133,13 +135,13 @@ cowplot::ggsave2(
 
 cowplot::ggsave2(
   cowplot::plot_grid(
-    mk_plot_ss("Atp1a3"),
+    mk_plot_ss("Ptgds"),
+    mk_plot_ss("S100b"),
     mk_plot_ss("Atp1b1"),
-    mk_plot_ss("Atp1a2"),
-    mk_plot_ss("Atp1b2"),
+    mk_plot_ss("Aqp4"),
     mk_plot_ss("Mobp"),
     mk_plot_ss("Olig1"),
     mk_plot_ss("Olig2"),
     ncol = 4, scale = 1
-  ), file = "../output/subcluster_supp_marker_umap.png", width = 1.5*4*2, height = 1.5*4, dpi = 600)
+  ), file = "../output/subcluster_supp_marker_umap_new4.png", width = 1.5*4*2, height = 1.5*4, dpi = 600)
 

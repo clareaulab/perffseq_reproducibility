@@ -286,9 +286,9 @@ cowplot::ggsave2(pV, file = "../output/violin_supp.pdf", width = 1.2, height = 1
 
 fm <- FindMarkers(so_asdc, group.by = "sampleID", "BCL11A", "SPI1",
                   logfc.threshold = 0.025, min.pct = 0.05) 
-fm %>% arrange((avg_log2FC)) %>% head(30)
 
-fm %>% arrange(p_val_adj) %>% head(30)
+fm %>% arrange(p_val_adj) %>%
+  write.table("../output/asdc_DEG.tsv", sep = "\t", quote = FALSE, row.names = TRUE, col.names = TRUE)
 
 gg <- c( "SPI1", "BCL11A","ITGAX","IL3RA",
          "GZMB", "TLR9", "IL1B", "CD5", "IFI30", "MZB1")
