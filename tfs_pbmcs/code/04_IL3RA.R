@@ -51,3 +51,17 @@ pumapb <- DimPlot(so, label = FALSE, group.by = c( "is_asdc"), shuffle = TRUE, s
   theme_void() + ggtitle("") + theme(legend.position = "none")
 
 cowplot::ggsave2(pumapb, file = "../output/umap_base_il3ra_subset.png", width = 4, height = 4, dpi = 400)
+
+
+# Azimuth
+rbind(readRDS("../output/_projected_PBMC_230601_IL3RAplus_sample.rds"),
+        readRDS("../output/_projected_PBMC_230601_IL3RAminus_sample.rds")) %>%
+  group_by(predicted.celltype.l1, name) %>%
+  summarize(count = n()) %>% ungroup() %>%
+  group_by(name) %>% mutate(perc = count / sum(count)*100) %>%
+  ggplot(aes(x = name, y = perc, fill = predicted.celltype.l1)) +
+  geom_bar(stat = "identity", width = 0.8, color = "black")+
+  scale_fill_manual(values = jdb_palette("corona")) + labs(x = "", y = "% of library", fill = "") +
+  pretty_plot(fontsize = 7) + 
+  L_border() + scale_y_continuous(expand = c(0,0)) -> pX
+cowplot::ggsave2(pX, file = "../output/stacked_barIL3RA.pdf", width = 2, height = 1.2)

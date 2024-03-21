@@ -52,5 +52,6 @@ import_project_scRNAseq <- function(dir_base){
 samples <- gsub("_filtered_feature_bc_matrix.h5", "", list.files("../data/counts/"))
 lapply(samples, import_project_scRNAseq)
 
-
+import_project_scRNAseq("230601_IL3RAplus_sample")
+import_project_scRNAseq("230601_IL3RAminus_sample")
 

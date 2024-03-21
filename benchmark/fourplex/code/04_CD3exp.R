@@ -15,8 +15,8 @@ mat <- cbind(flex, nsyp, nsnp, cd3m)
 mdf <- data.frame(
   row.names = colnames(mat),
   sampleID = c(rep("1flex", dim(flex)[2]),
-               rep("2nsnp", dim(nsnp)[2]),
                rep("3nsyp", dim(nsyp)[2]),
+               rep("2nsnp", dim(nsnp)[2]),
                rep("4CD3m", dim(cd3m)[2]))
 )
 
@@ -50,12 +50,58 @@ so$CD3Dc <- (so@assays$RNA@counts["CD3D", ])
 so$CD3Ec <- (so@assays$RNA@counts["CD3E", ])
 
 so_t <- subset(so, seurat_clusters %in%c("0", "1", "2", "4", "5"))
-library(ggpubr)
-pcore <- ggplot(so_t@meta.data, aes(x = log1p(CD3Dc), y = log1p(CD3Ec))) +
-  geom_point() + facet_wrap(~sampleID, nrow = 1) +
-  geom_smooth(method = "lm", se = FALSE) +
-  pretty_plot(fontsize = 7)
-cowplot::ggsave2(pcore, file = "../plots/cd3_core.pdf", height= 1.8, width = 7.2)
+
+so_t@meta.data %>% 
+  mutate(ratio = log2((CD3Ec+0.1)/(CD3Dc+0.1))) %>%
+  ggplot(aes(x = sampleID, y = ratio)) + 
+  geom_violin()
+ 
+
+if(FALSE){
+  library(ggpubr)
+  pcore <- ggplot(so_t@meta.data, aes(x = log1p(CD3Dc), y = log1p(CD3Ec))) +
+    geom_point() + facet_wrap(~sampleID, nrow = 1) +
+    geom_smooth(method = "lm", se = FALSE) +
+    pretty_plot(fontsize = 7)
+  cowplot::ggsave2(pcore, file = "../plots/cd3_core.pdf", height= 1.8, width = 7.2)
+}
+
+cpm <- function(vec){
+  vec/sum(vec)*1000000
+}
+
+# Compute CPM
+rs1 <- rowSums(so_t@assays$RNA@counts[,so_t@meta.data$sampleID=="1flex"]) %>% cpm
+rs2 <- rowSums(so_t@assays$RNA@counts[,so_t@meta.data$sampleID=="2nsnp"]) %>% cpm
+rs3 <- rowSums(so_t@assays$RNA@counts[,so_t@meta.data$sampleID=="3nsyp"]) %>% cpm
+rs4 <- rowSums(so_t@assays$RNA@counts[,so_t@meta.data$sampleID=="4CD3m"]) %>% cpm
+g2 <- c("CD3D", "CD3E")
+data.frame(
+  what = rep(c("1flex", "2nsnp", "3nsyp", "4CD3m"), each = 2),
+  exp = round(c(rs1[g2], rs2[g2], rs3[g2], rs4[g2]),0),
+  gene = rep(g2, 4)
+) %>% mutate(l2e = log2(exp)) %>% ggplot(aes(x = what, y = log2(exp), fill = gene)) + 
+  geom_bar(stat = "identity", position = "dodge", color = "black", width = 0.8) +
+  scale_y_continuous(expand = c(0,0), limits = c(0, 12)) + scale_fill_manual(values = c("lightblue", "grey"))+
+  pretty_plot(fontsize = 8) + L_border() +
+  theme(legend.position = "none") -> pX
+  
+cowplot::ggsave2(pX, file = "../plots/bars_cd3_log2.pdf", width = 2, height = 2)
+
+FindMarkers(so_t, group.by = "sampleID", ident.1 = "4CD3m", ident.2 = "1flex", logfc.threshold = 0.5)
+FindMarkers(so_t, group.by = "sampleID", ident.1 = "3nsyp", ident.2 = "1flex", logfc.threshold = 0.5)
+FindMarkers(so_t, group.by = "sampleID", ident.1 = "2nsnp", ident.2 = "1flex", logfc.threshold = 0.5)
+
+so_t@meta.data %>% group_by(sampleID) %>%
+  summarize(CD3D = mean(CD3Dc > 0), CD3E = mean(CD3Ec > 0)) %>%
+  reshape2::melt(id.vars = "sampleID") %>%
+  ggplot(aes(x = sampleID, y = value*100, fill = variable)) + 
+  geom_bar(stat = "identity", position = "dodge", color = "black", width = 0.8) +
+  scale_y_continuous(expand = c(0,0), limits = c(0, 100)) +
+  pretty_plot(fontsize = 8) + L_border() + scale_fill_manual(values = c("lightblue", "grey"))+
+  theme(legend.position = "none") -> pY
+cowplot::ggsave2(pY, file = "../plots/bars_cd3_pctPos.pdf", width = 2, height = 2)
+
 
 mk_plot <- function(gene){
   pu <- FeaturePlot(so, features = c( gene),  

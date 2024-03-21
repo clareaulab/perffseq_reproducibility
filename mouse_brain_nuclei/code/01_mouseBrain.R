@@ -135,13 +135,13 @@ cowplot::ggsave2(
 
 cowplot::ggsave2(
   cowplot::plot_grid(
-    mk_plot_ss("Ptgds"),
-    mk_plot_ss("S100b"),
-    mk_plot_ss("Atp1b1"),
-    mk_plot_ss("Aqp4"),
     mk_plot_ss("Mobp"),
     mk_plot_ss("Olig1"),
-    mk_plot_ss("Olig2"),
+    mk_plot_ss("Ptgds"),
+    mk_plot_ss("S100b"),
+    mk_plot_ss("Aqp4"),
+    mk_plot_ss("Atp1b1"),
+    mk_plot_ss("Snap25"),
     ncol = 4, scale = 1
   ), file = "../output/subcluster_supp_marker_umap_new4.png", width = 1.5*4*2, height = 1.5*4, dpi = 600)
 
