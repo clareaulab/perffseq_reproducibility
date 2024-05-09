@@ -4,7 +4,8 @@ library(BuenColors)
 #### Panel e
 data_df <- data.frame(
   Cond = c("A", "B", "C", "D"),
-  internal = c("unstained_221118",  "HCR_221104", "HYPR_221104","unstained_hairpin_221118"),
+  internal = c("221118_Unstained_cr_221118_Unstained",  "221104_HCR_cr_221104_HCR",
+               "221104_HYPR_cr_221104_HYPR","221118_Unstained-Hairpin_cr_221118_Unstained-Hairpin_cr"),
   conf = c(70.3, 1.6, 1.2, 76.2),
   half = c(13.9, 51.1, 51.1, 11.9)
 )
@@ -41,7 +42,7 @@ cowplot::ggsave2(pBS, file = "../plots_for_paper/stripping_qc.pdf", width = 2.2,
 ##### h
 data_dfSORT <- data.frame(
   Cond = c("J", "K", "L"),
-  internal = c("230320_CD3_sort_cr_230320_CD3_sort",  "230320_None_cr_230320_None", "230320_CD3_sort_cr_230320_CD3_sort"),
+  internal = c("230320_CD3_sort_cr_230320_CD3_sort",  "230320_None_cr_230320_None", "2023_03_27_CD3_cr_2023_03_27_CD3"),
   conf = c(33.07, 18.6, 89.9),
   half = c(25.4, 30.1, 4.2)
 )

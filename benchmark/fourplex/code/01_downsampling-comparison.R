@@ -60,19 +60,19 @@ process_sample <- function(molecule_info_file, cell_barcodes, what = "what", pro
 # Import data 
 
 mat_1 <- Seurat::Read10X_h5("../data/cd3bench_cr_Unsorted_filtered_feature_bc_matrix.h5")
-molecule_info_file1 <- "../../../../ps-large-data-files/molecule_info/perfseq/pbmc/Unsorted_sample_molecule_info.h5"
+molecule_info_file1 <- "../../../../ps-large-data-files/molecule_info/perffseq/pbmc/Unsorted_sample_molecule_info.h5"
 cell_barcodes1 <- stringr::str_remove(colnames(mat_1), "-1$")
 
 mat_2 <- Seurat::Read10X_h5("../data/cd3bench_cr_No_sort_no_probe_filtered_feature_bc_matrix.h5")
-molecule_info_file2 <- "../../../../ps-large-data-files/molecule_info/perfseq/pbmc/No_sort_no_probe_sample_molecule_info.h5"
+molecule_info_file2 <- "../../../../ps-large-data-files/molecule_info/perffseq/pbmc/No_sort_no_probe_sample_molecule_info.h5"
 cell_barcodes2 <- stringr::str_remove(colnames(mat_2), "-1$")
 
 mat_3 <- Seurat::Read10X_h5("../data/cd3bench_cr_No_sort_yes_probe_filtered_feature_bc_matrix.h5")
-molecule_info_file3 <- "../../../../ps-large-data-files/molecule_info/perfseq/pbmc/No_sort_yes_probe_sample_molecule_info.h5"
+molecule_info_file3 <- "../../../../ps-large-data-files/molecule_info/perffseq/pbmc/No_sort_yes_probe_sample_molecule_info.h5"
 cell_barcodes3 <- stringr::str_remove(colnames(mat_3), "-1$")
 
 mat_4 <- Seurat::Read10X_h5("../data/cd3bench_cr_CD3_positive_filtered_feature_bc_matrix.h5")
-molecule_info_file4 <- "../../../../ps-large-data-files/molecule_info/perfseq/pbmc/CD3_positive_sample_molecule_info.h5"
+molecule_info_file4 <- "../../../../ps-large-data-files/molecule_info/perffseq/pbmc/CD3_positive_sample_molecule_info.h5"
 cell_barcodes4 <- stringr::str_remove(colnames(mat_4), "-1$")
 
 mat_5 <- Seurat::Read10X_h5("../data/pub10x_10k_PBMC_filtered_feature_bc_matrix.h5")
